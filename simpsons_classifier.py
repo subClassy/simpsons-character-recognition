@@ -1,15 +1,17 @@
 import os
 
+from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
+                                        ReduceLROnPlateau)
 from tensorflow.keras.layers import (Activation, BatchNormalization, Conv2D,
                                      Dense, Dropout, Flatten, MaxPooling2D)
 from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.optimizers import RMSprop, SGD, Adam
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
 num_classes = 20
 img_rows, img_cols = 32, 32
 batch_size = 32
+epochs = 25
 
 my_path = os.path.abspath(os.path.dirname(__file__))
 train_data_dir = os.path.join(my_path, './simpsons/train')
@@ -106,5 +108,19 @@ reduce_lr = ReduceLROnPlateau(monitor = 'val_loss',
                               verbose = 1,
                               min_delta = 0.00001)
 
-# we put our call backs into a callback list
 callbacks = [earlystop, checkpoint, reduce_lr]
+
+model.compile(loss = 'categorical_crossentropy',
+              optimizer = Adam(learning_rate=0.01),
+              metrics = ['accuracy'])
+
+nb_train_samples = 19548
+nb_validation_samples = 990
+
+history = model.fit(
+    train_generator,
+    steps_per_epoch = nb_train_samples // batch_size,
+    epochs = epochs,
+    callbacks = callbacks,
+    validation_data = validation_generator,
+    validation_steps = nb_validation_samples // batch_size)
