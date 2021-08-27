@@ -1,5 +1,8 @@
 import os
 
+from tensorflow.keras.layers import (Activation, BatchNormalization, Conv2D,
+                                     Dense, Dropout, Flatten, MaxPooling2D)
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 num_classes = 20
@@ -31,3 +34,54 @@ validation_generator = validation_datagen.flow_from_directory(
         target_size=(img_rows, img_cols),
         batch_size=batch_size,
         class_mode='categorical')
+
+model = Sequential()
+
+model.add(Conv2D(64, (3, 3), padding='same', input_shape=(img_rows, img_cols, 3)))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+
+model.add(Conv2D(64, (3, 3), padding = "same"))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Conv2D(128, (3, 3), padding="same"))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+
+model.add(Conv2D(128, (3, 3), padding="same"))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Conv2D(256, (3, 3), padding="same"))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+
+model.add(Conv2D(256, (3, 3), padding="same"))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Flatten())
+model.add(Dense(256))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.5))
+
+model.add(Dense(256))
+model.add(Activation('relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.5))
+
+model.add(Dense(num_classes))
+model.add(Activation("softmax"))
+
+print(model.summary())
