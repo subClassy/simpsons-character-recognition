@@ -4,6 +4,8 @@ from tensorflow.keras.layers import (Activation, BatchNormalization, Conv2D,
                                      Dense, Dropout, Flatten, MaxPooling2D)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import RMSprop, SGD, Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
 num_classes = 20
 img_rows, img_cols = 32, 32
@@ -85,3 +87,24 @@ model.add(Dense(num_classes))
 model.add(Activation("softmax"))
 
 print(model.summary())
+
+checkpoint = ModelCheckpoint("simpsons_little_vgg.h5",
+                             monitor="val_loss",
+                             mode="min",
+                             save_best_only = True,
+                             verbose=1)
+
+earlystop = EarlyStopping(monitor = 'val_loss', 
+                          min_delta = 0, 
+                          patience = 3,
+                          verbose = 1,
+                          restore_best_weights = True)
+
+reduce_lr = ReduceLROnPlateau(monitor = 'val_loss',
+                              factor = 0.2,
+                              patience = 3,
+                              verbose = 1,
+                              min_delta = 0.00001)
+
+# we put our call backs into a callback list
+callbacks = [earlystop, checkpoint, reduce_lr]
